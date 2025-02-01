@@ -1,6 +1,7 @@
 import os
 
-dir = input("Add meg a dirt: ")
+#dir = input("Add meg a dirt: ")
+dir = "D:/Új mappa/random dolgok/njit/dusza_cluster"
 
 klaszter = open(f'{dir}/.klaszter', 'r')
 
@@ -33,7 +34,7 @@ def monitoring():
     hasznalt_memoria = 0
     print("-------------------------")
     for i in os.listdir(dir):
-        if "szamitogep" in i:
+        if os.path.isdir(f'{dir}/{i}') and os.path.isfile(f'{dir}/{i}/.szamitogep_config'):
             print(i)
             print("MAX:")
             config = open(f'{dir}/{i}/.szamitogep_config', 'r')
@@ -65,16 +66,16 @@ def monitoring():
 def torles():
     ciklus = 0
     print("-------------------------")
-    szamito = input("Számítógép száma: ")
-    if "szamitogep"+szamito in os.listdir(dir):
-        gepszam = os.listdir(f"{dir}/szamitogep{szamito}")
+    szamito = input("Számítógép neve: ")
+    if szamito in os.listdir(dir) and os.path.isfile(f'{dir}/{szamito}/.szamitogep_config'):
+        gepszam = os.listdir(f"{dir}/{szamito}")
         if gepszam != ['.szamitogep_config']:
             print("A számítógép nem üres")
             print("Futó programok:")
-            for k in os.listdir(f"{dir}/szamitogep{szamito}"):
+            for k in os.listdir(f"{dir}/{szamito}"):
                 if ".szamitogep_config" not in k:
                     print(k)
-                    programok = open(f"{dir}/szamitogep{szamito}/{k}")
+                    programok = open(f"{dir}/{szamito}/{k}")
                     for l in programok:
                         if ciklus < 2:
                             ciklus += 1
@@ -82,8 +83,8 @@ def torles():
                 print("-------------------------")
                 ciklus = 0
         else:
-            os.remove(f"{dir}/szamitogep{szamito}/.szamitogep_config")
-            os.rmdir(f"{dir}/szamitogep{szamito}")
+            os.remove(f"{dir}/{szamito}/.szamitogep_config")
+            os.rmdir(f"{dir}/{szamito}")
             print("A számítógép törölve")
             print("-------------------------")
     else:
@@ -92,16 +93,16 @@ def torles():
 
 def hozzaadas():
     print("-------------------------")
-    new_pc = int(input("Új számítógép száma: "))
-    if str(f"szamitogep{new_pc}") in os.listdir(dir):
+    new_pc = input("Új számítógép neve: ")
+    if new_pc in os.listdir(dir):
         print("Ez a számítógép már létezik")
         print("-------------------------")
     else:
         teljesitmeny1 = int(input("Proccesszor erőforrás: "))
         teljesitmeny2 = int(input("Memóriakapacítás: "))
-        os.mkdir(f"{dir}/szamitogep{new_pc}")
-        open(f"{dir}/szamitogep{new_pc}/.szamitogep_config", "w")
-        with open(f"{dir}/szamitogep{new_pc}/.szamitogep_config", "w") as f:
+        os.mkdir(f"{dir}/{new_pc}")
+        open(f"{dir}/{new_pc}/.szamitogep_config", "w")
+        with open(f"{dir}/{new_pc}/.szamitogep_config", "w") as f:
             f.write(str(teljesitmeny1)+"\n"+str(teljesitmeny2)+"\n")
         print("Számítógép létrehozva")
         print("-------------------------")
