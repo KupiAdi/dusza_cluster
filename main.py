@@ -248,14 +248,15 @@ def uj_program_futtatasa():
         return None, None
 
     def check_resources_and_create_file(program_name, new_pc):
+        if not os.path.exists(f"./{new_pc}"):
+            print("A megadott számítógép nem létezik.")
+            return False
+
         instances, cpu_needed, ram_needed, instances_index = get_program_resources(program_name)
         
         if cpu_needed is None or ram_needed is None:
             print("A program nem szerepel a klaszter fájlban.")
             return False
-
-        if not os.path.exists(f"./{new_pc}"):
-            os.makedirs(f"./{new_pc}")
 
         cpu_available, ram_available = get_computer_resources(new_pc)
 
