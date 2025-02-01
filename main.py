@@ -1,7 +1,6 @@
 import os
 
-#dir = input("Add meg a dirt: ")
-dir = "D:/Új mappa/random dolgok/njit/dusza_cluster"
+dir = input("Add meg a dirt: ")
 
 klaszter = open(f'{dir}/.klaszter', 'r')
 
@@ -20,10 +19,25 @@ def menu():
         torles()
     elif muvelet == "3":
         hozzaadas()
+    elif muvelet == "5":
+        modositas()
     elif muvelet == "7":
         exit()
     else:
         print("Helytelen")
+
+def modify_line(file_path, line_number, new_content):
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
+
+    if 0 <= line_number < len(lines):
+        lines[line_number] = new_content + '\n'
+    else:
+        print(f"A megadott sor száma ({line_number}) kívül esik a fájl sorainak tartományán.")
+        return
+
+    with open(file_path, 'w') as file:
+        file.writelines(lines)
 
 def monitoring():
     ciklus = 0
@@ -106,6 +120,30 @@ def hozzaadas():
             f.write(str(teljesitmeny1)+"\n"+str(teljesitmeny2)+"\n")
         print("Számítógép létrehozva")
         print("-------------------------")
+
+def modositas():
+    n = -1
+    program = input("Program neve: ")
+    with open(f'{dir}/.klaszter', 'r') as f:
+        sorok = f.readlines()
+
+    for i in sorok:
+        n += 1
+        van = False
+        if i.strip() == program:
+            van = True
+            break
+    
+    if van == True:
+        x = input("Példányok száma: ")
+        y = input("Processzor erőforrás: ")
+        z = input("Memória erőforrás: ")
+        modify_line(f"{dir}/.klaszter", n+1, x)
+        modify_line(f"{dir}/.klaszter", n+2, y)
+        modify_line(f"{dir}/.klaszter", n+3, z)
+        print("Sikeresen módosítva!")
+    else:
+        print("Nincs ilyen program!")
 
 while True:
     menu()
