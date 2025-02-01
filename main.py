@@ -12,7 +12,8 @@ def menu():
     print("4. Program leállítása")
     print("5. Program adatainak módosítása")
     print("6. Új programpéldány futtatása")
-    print("7. Kilépés")
+    print("7. Adott programpéldány leállítása")
+    print("8. Kilépés")
     muvelet = input("Mit akarsz? ")
     if muvelet == "1":
         monitoring()
@@ -25,6 +26,8 @@ def menu():
     elif muvelet == "5":
         modositas()
     elif muvelet == "7":
+        programpeldany_leallitas()
+    elif muvelet == "8":
         exit()
     else:
         print("Helytelen")
@@ -179,6 +182,30 @@ def modositas():
         modify_line(f"{dir}/.klaszter", n+3, z)
         print("Sikeresen módosítva!")
     else:
+        print("Nincs ilyen program!")
+
+def programpeldany_leallitas():
+    for i in os.listdir(dir):
+        if os.path.isdir(f'{dir}/{i}') and os.path.isfile(f'{dir}/{i}/.szamitogep_config') and os.listdir(f'{dir}/{i}') != ['.szamitogep_config']:
+            print(i+":")
+            for j in os.listdir(f"{dir}/{i}"):
+                if ".szamitogep_config" not in j:
+                    print("\t" + j)
+
+    x = input("Melyik programot akarod leállítani: ")
+
+    van = False
+
+    for i in os.listdir(dir):
+        if os.path.isdir(f'{dir}/{i}') and os.path.isfile(f'{dir}/{i}/.szamitogep_config') and os.listdir(f'{dir}/{i}') != ['.szamitogep_config']:
+            for j in os.listdir(f"{dir}/{i}"):
+                if x == j:
+                    os.remove(f"{dir}/{i}/{x}")
+                    van = True
+                    print("Programpéldány sikeresen leállítva!")
+                    break
+
+    if van == False:
         print("Nincs ilyen program!")
 
 while True:
