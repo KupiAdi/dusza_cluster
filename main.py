@@ -1,7 +1,7 @@
 import os
 
 #dir = input("Add meg a dirt: ")
-dir = "D:/Új mappa/random dolgok/njit/dusza_cluster"
+dir = "/home/sz0msz3d/Documents/dusza_cluster"
 
 klaszter = open(f'{dir}/.klaszter', 'r')
 
@@ -20,6 +20,8 @@ def menu():
         torles()
     elif muvelet == "3":
         hozzaadas()
+    elif muvelet == "4":
+        program_leallitas()
     elif muvelet == "7":
         exit()
     else:
@@ -105,6 +107,39 @@ def hozzaadas():
         with open(f"{dir}/{new_pc}/.szamitogep_config", "w") as f:
             f.write(str(teljesitmeny1)+"\n"+str(teljesitmeny2)+"\n")
         print("Számítógép létrehozva")
+        print("-------------------------")
+
+def program_leallitas():
+    program = input("Melyik programot akarod törölni? ")
+    found = False
+
+    with open(f"{dir}/.klaszter", "r") as f:
+        lines = f.readlines()
+    new_lines = []
+    skip_count = 0
+    for i in range(len(lines)):
+        if skip_count > 0:
+            skip_count -= 1
+            continue
+        if lines[i].strip() == program:
+            skip_count = 3
+            found = True
+            continue
+        new_lines.append(lines[i])
+    with open(f"{dir}/.klaszter", "w") as f:
+        f.writelines(new_lines)
+
+    for i in os.listdir(dir):
+        path = f"{dir}/{i}"
+        if os.path.isdir(path):
+            for j in os.listdir(path):
+                if program in j:
+                    os.remove(f"{path}/{j}")
+                    print("Program törölve:", j)
+                    print("-------------------------")
+
+    if not found:
+        print("Nincs ilyen program")
         print("-------------------------")
 
 while True:
