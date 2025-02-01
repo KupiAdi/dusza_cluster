@@ -52,15 +52,16 @@ def modify_line(file_path, line_number, new_content):
 def monitoring():
     total_active = 0
     total_inactive = 0
+    cluster_consistent = True
     program_instances = {}
-    print("-------------------------")
     print("Klaszter Állapotának Áttekintése:\n")
+    print("-------------------------")
 
     for pc in os.listdir(dir):
         pc_path = os.path.join(dir, pc)
         if os.path.isdir(pc_path) and os.path.isfile(os.path.join(pc_path, ".szamitogep_config")):
 
-            with open(os.path.join(pc_path, ".szamitogep_config"), "r") as conf_file:
+            with open(os.path.join(pc_path, ".szamitogep_config"), "r", encoding="utf-8") as conf_file:
                 config_lines = conf_file.readlines()
                 max_cpu = int(config_lines[0].strip()) if config_lines else 0
                 max_ram = int(config_lines[1].strip()) if len(config_lines) > 1 else 0
@@ -74,7 +75,7 @@ def monitoring():
                     continue
                 file_path = os.path.join(pc_path, item)
                 if os.path.isfile(file_path):
-                    with open(file_path, "r") as prog_file:
+                    with open(file_path, "r", encoding="utf-8") as prog_file:
                         lines = prog_file.readlines()
 
                         if len(lines) >= 4:
@@ -94,14 +95,20 @@ def monitoring():
                                 total_inactive += 1
             free_cpu = max_cpu - used_cpu
             free_ram = max_ram - used_ram
-            print("Szabad erőforrások: CPU:", free_cpu, "RAM:", free_ram)
+            if free_ram >= 0 and free_cpu >= 0:
+                print("Szabad erőforrások: CPU:", free_cpu, "RAM:", free_ram)
+            else:
+                cluster_consistent = False
+                if free_ram < 0:
+                    print("Az alkalmazás több RAM-ot használ mint amennyi elérhető")              
+                if free_cpu < 0:
+                    print("Az alkalmazás több CPU-t használ mint amennyi elérhető")
             print("-------------------------")
 
     print("\nÖsszes futó folyamat:")
     print("AKTÍV:", total_active, "INAKTÍV:", total_inactive)
     
-    cluster_consistent = True
-    with open(f"{dir}/.klaszter", "r") as f:
+    with open(f"{dir}/.klaszter", "r", encoding="utf-8") as f:
         lines = f.readlines()
 
         for i in range(0, len(lines), 4):
@@ -240,11 +247,18 @@ def programpeldany_leallitas():
 
     van = False
 
+    with open(f'{dir}/.klaszter', 'r', encoding="utf-8") as f:
+        sorok = f.readlines()
+    n = -1
     for i in os.listdir(dir):
         if os.path.isdir(f'{dir}/{i}') and os.path.isfile(f'{dir}/{i}/.szamitogep_config') and os.listdir(f'{dir}/{i}') != ['.szamitogep_config']:
             for j in os.listdir(f"{dir}/{i}"):
                 if x == j:
                     os.remove(f"{dir}/{i}/{x}")
+                    for k in sorok:
+                        n += 1
+                        if k.strip() == x.split('-')[0]:
+                            modify_line(f"{dir}/.klaszter", n+1, str(int(sorok[n+1])-1))
                     van = True
                     print("Programpéldány sikeresen leállítva!")
                     break
@@ -331,6 +345,80 @@ def uj_program_futtatasa():
     else:
         print("Nem teljesültek a feltételek.")
 
+
+total_active = 0
+total_inactive = 0
+cluster_consistent = True
+program_instances = {}
+print("Klaszter Állapotának Áttekintése:\n")
+print("-------------------------")
+
+for pc in os.listdir(dir):
+    pc_path = os.path.join(dir, pc)
+    if os.path.isdir(pc_path) and os.path.isfile(os.path.join(pc_path, ".szamitogep_config")):
+
+        with open(os.path.join(pc_path, ".szamitogep_config"), "r", encoding="utf-8") as conf_file:
+            config_lines = conf_file.readlines()
+            max_cpu = int(config_lines[0].strip()) if config_lines else 0
+            max_ram = int(config_lines[1].strip()) if len(config_lines) > 1 else 0
+        used_cpu = 0
+        used_ram = 0
+        print("Számítógép:", pc)
+        print("Max CPU:", max_cpu, "Max RAM:", max_ram)
+
+        for item in os.listdir(pc_path):
+            if item == ".szamitogep_config":
+                continue
+            file_path = os.path.join(pc_path, item)
+            if os.path.isfile(file_path):
+                with open(file_path, "r", encoding="utf-8") as prog_file:
+                    lines = prog_file.readlines()
+
+                    if len(lines) >= 4:
+                        status = lines[1].strip()
+                        cpu_needed = int(lines[2].strip())
+                        ram_needed = int(lines[3].strip())
+                        used_cpu += cpu_needed
+                        used_ram += ram_needed
+
+                        prog_name = item.split('-')[0]
+                        if prog_name not in program_instances:
+                            program_instances[prog_name] = []
+                        program_instances[prog_name].append((pc, item, cpu_needed, ram_needed, status))
+                        if status == "AKTÍV":
+                            total_active += 1
+                        elif status == "INAKTÍV":
+                            total_inactive += 1
+        free_cpu = max_cpu - used_cpu
+        free_ram = max_ram - used_ram
+        if free_ram >= 0 and free_cpu >= 0:
+            print("Szabad erőforrások: CPU:", free_cpu, "RAM:", free_ram)
+        else:
+            cluster_consistent = False
+            if free_ram < 0:
+                print("Az alkalmazás több RAM-ot használ mint amennyi elérhető")              
+            if free_cpu < 0:
+                print("Az alkalmazás több CPU-t használ mint amennyi elérhető")
+        print("-------------------------")
+
+print("\nÖsszes futó folyamat:")
+print("AKTÍV:", total_active, "INAKTÍV:", total_inactive)
+
+with open(f"{dir}/.klaszter", "r", encoding="utf-8") as f:
+    lines = f.readlines()
+
+    for i in range(0, len(lines), 4):
+        prog = lines[i].strip()
+        expected_instances = int(lines[i+1].strip())
+        actual_instances = len(program_instances.get(prog, []))
+        if expected_instances != actual_instances:
+            cluster_consistent = False
+            print(f"Hibás állapot: {prog} esetén várva {expected_instances}, valós példány: {actual_instances}")
+if cluster_consistent:
+    print("A klaszter állapota helyes.")
+else:
+    print("A klaszter állapota NEM helyes.")
+print("-------------------------")
 
 while True:
     menu()
