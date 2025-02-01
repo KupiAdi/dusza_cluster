@@ -270,7 +270,7 @@ def uj_program_futtatasa():
         unique_id = generate_unique_id(program_name)
         file_path = os.path.join(new_pc, unique_id)
         
-        with open(file_path, "w") as file:
+        with open(file_path, "w", encoding="utf-8") as file:
             current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             file.write(f"{current_time}\n")
             file.write("AKTÍV\n")
