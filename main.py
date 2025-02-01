@@ -1,7 +1,9 @@
 import os
+import random
+import string
+from datetime import datetime
 
-#dir = input("Add meg a dirt: ")
-dir = "D:/Új mappa/random dolgok/njit/dusza_cluster"
+dir = input("Add meg a dirt: ")
 
 klaszter = open(f'{dir}/.klaszter', 'r')
 
@@ -20,6 +22,8 @@ def menu():
         torles()
     elif muvelet == "3":
         hozzaadas()
+    elif muvelet == "6":
+        uj_program_futtatasa()
     elif muvelet == "7":
         exit()
     else:
@@ -106,6 +110,85 @@ def hozzaadas():
             f.write(str(teljesitmeny1)+"\n"+str(teljesitmeny2)+"\n")
         print("Számítógép létrehozva")
         print("-------------------------")
+
+def uj_program_futtatasa():
+
+    def generate_unique_id(program_name):
+        unique_id = program_name + '-' + ''.join(random.choices(string.ascii_letters + string.digits, k=6))
+        return unique_id
+
+    def get_program_resources(program_name):
+        with open(".klaszter", "r", encoding="utf-8") as file:
+            lines = file.readlines()
+            for i in range(0, len(lines), 4):
+                if lines[i].strip() == program_name:
+                    instances = int(lines[i + 1].strip())
+                    cpu = int(lines[i + 2].strip())
+                    ram = int(lines[i + 3].strip())
+                    return instances, cpu, ram, i + 1
+        return None, None, None, None
+
+    def update_instances_count(program_name, instances_index):
+        with open(".klaszter", "r", encoding="utf-8") as file:
+            lines = file.readlines()
+        
+        lines[instances_index] = str(int(lines[instances_index].strip()) + 1) + "\n"
+        
+        with open(".klaszter", "w", encoding="utf-8") as file:
+            file.writelines(lines)
+
+    def get_computer_resources(new_pc):
+        config_path = os.path.join(new_pc, ".szamitogep_config")
+        if os.path.exists(config_path):
+            with open(config_path, "r", encoding="utf-8") as file:
+                cpu_available = int(file.readline().strip())
+                ram_available = int(file.readline().strip())
+                return cpu_available, ram_available
+        return None, None
+
+    def check_resources_and_create_file(program_name, new_pc):
+        instances, cpu_needed, ram_needed, instances_index = get_program_resources(program_name)
+        
+        if cpu_needed is None or ram_needed is None:
+            print("A program nem szerepel a klaszter fájlban.")
+            return False
+
+        if not os.path.exists(f"./{new_pc}"):
+            os.makedirs(f"./{new_pc}")
+
+        cpu_available, ram_available = get_computer_resources(new_pc)
+
+        if cpu_available is None or ram_available is None:
+            print("A számítógép konfigurációs fájl nem található vagy érvénytelen.")
+            return False
+
+        if cpu_needed > cpu_available or ram_needed > ram_available:
+            print("Nincs elég erőforrás a program futtatásához.")
+            return False
+
+        unique_id = generate_unique_id(program_name)
+        file_path = os.path.join(new_pc, unique_id + ".txt")
+        
+        with open(file_path, "w") as file:
+            current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            file.write(f"{current_time}\n")
+            file.write("AKTÍV\n")
+            file.write(f"{cpu_needed}\n")
+            file.write(f"{ram_needed}\n")
+
+        update_instances_count(program_name, instances_index)
+        
+        print(f"A program új példánya futtatható és a fájl létrejött: {file_path}")
+        return True
+
+    new_pc = input("Számítógép neve: ")
+    new_program = input("Mi a program neve?")
+
+    if check_resources_and_create_file(new_program, new_pc):
+        print("Minden feltétel teljesült.")
+    else:
+        print("Nem teljesültek a feltételek.")
+
 
 while True:
     menu()
