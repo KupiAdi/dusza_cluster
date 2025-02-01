@@ -14,7 +14,8 @@ def menu():
     print("4. Program leállítása")
     print("5. Program adatainak módosítása")
     print("6. Új programpéldány futtatása")
-    print("7. Kilépés")
+    print("7. Adott programpéldány leállítása")
+    print("8. Kilépés")
     muvelet = input("Mit akarsz? ")
     if muvelet == "1":
         monitoring()
@@ -22,12 +23,31 @@ def menu():
         torles()
     elif muvelet == "3":
         hozzaadas()
+    elif muvelet == "4":
+        program_leallitas()
+    elif muvelet == "5":
+        modositas()
     elif muvelet == "6":
         uj_program_futtatasa()
     elif muvelet == "7":
+        programpeldany_leallitas()
+    elif muvelet == "8":
         exit()
     else:
         print("Helytelen")
+
+def modify_line(file_path, line_number, new_content):
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
+
+    if 0 <= line_number < len(lines):
+        lines[line_number] = new_content + '\n'
+    else:
+        print(f"A megadott sor száma ({line_number}) kívül esik a fájl sorainak tartományán.")
+        return
+
+    with open(file_path, 'w') as file:
+        file.writelines(lines)
 
 def monitoring():
     ciklus = 0
@@ -110,6 +130,87 @@ def hozzaadas():
             f.write(str(teljesitmeny1)+"\n"+str(teljesitmeny2)+"\n")
         print("Számítógép létrehozva")
         print("-------------------------")
+
+def program_leallitas():
+    program = input("Melyik programot akarod törölni? ")
+    found = False
+
+    with open(f"{dir}/.klaszter", "r") as f:
+        lines = f.readlines()
+    new_lines = []
+    skip_count = 0
+    for i in range(len(lines)):
+        if skip_count > 0:
+            skip_count -= 1
+            continue
+        if lines[i].strip() == program:
+            skip_count = 3
+            found = True
+            continue
+        new_lines.append(lines[i])
+    with open(f"{dir}/.klaszter", "w") as f:
+        f.writelines(new_lines)
+
+    for i in os.listdir(dir):
+        path = f"{dir}/{i}"
+        if os.path.isdir(path):
+            for j in os.listdir(path):
+                if program in j:
+                    os.remove(f"{path}/{j}")
+                    print("Program törölve:", j)
+                    print("-------------------------")
+
+    if not found:
+        print("Nincs ilyen program")
+        print("-------------------------")
+
+def modositas():
+    n = -1
+    program = input("Program neve: ")
+    with open(f'{dir}/.klaszter', 'r') as f:
+        sorok = f.readlines()
+
+    for i in sorok:
+        n += 1
+        van = False
+        if i.strip() == program:
+            van = True
+            break
+    
+    if van == True:
+        x = input("Példányok száma: ")
+        y = input("Processzor erőforrás: ")
+        z = input("Memória erőforrás: ")
+        modify_line(f"{dir}/.klaszter", n+1, x)
+        modify_line(f"{dir}/.klaszter", n+2, y)
+        modify_line(f"{dir}/.klaszter", n+3, z)
+        print("Sikeresen módosítva!")
+    else:
+        print("Nincs ilyen program!")
+
+def programpeldany_leallitas():
+    for i in os.listdir(dir):
+        if os.path.isdir(f'{dir}/{i}') and os.path.isfile(f'{dir}/{i}/.szamitogep_config') and os.listdir(f'{dir}/{i}') != ['.szamitogep_config']:
+            print(i+":")
+            for j in os.listdir(f"{dir}/{i}"):
+                if ".szamitogep_config" not in j:
+                    print("\t" + j)
+
+    x = input("Melyik programot akarod leállítani: ")
+
+    van = False
+
+    for i in os.listdir(dir):
+        if os.path.isdir(f'{dir}/{i}') and os.path.isfile(f'{dir}/{i}/.szamitogep_config') and os.listdir(f'{dir}/{i}') != ['.szamitogep_config']:
+            for j in os.listdir(f"{dir}/{i}"):
+                if x == j:
+                    os.remove(f"{dir}/{i}/{x}")
+                    van = True
+                    print("Programpéldány sikeresen leállítva!")
+                    break
+
+    if van == False:
+        print("Nincs ilyen program!")
 
 def uj_program_futtatasa():
 
