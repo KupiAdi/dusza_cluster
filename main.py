@@ -268,7 +268,7 @@ def uj_program_futtatasa():
             return False
 
         unique_id = generate_unique_id(program_name)
-        file_path = os.path.join(new_pc, unique_id + ".txt")
+        file_path = os.path.join(new_pc, unique_id)
         
         with open(file_path, "w") as file:
             current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
