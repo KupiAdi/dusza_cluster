@@ -329,10 +329,10 @@ def stop_specific_program():
         if os.path.isdir(f'{dir}/{i}') and os.path.isfile(f'{dir}/{i}/.szamitogep_config') and os.listdir(f'{dir}/{i}') != ['.szamitogep_config']:
             for j in os.listdir(f"{dir}/{i}"):
                 if program == j:
-                    os.remove(f"{dir}/{i}/{x}")
+                    os.remove(f"{dir}/{i}/{program}")
                     for k in rows:
                         n += 1
-                        if k.strip() == x.split('-')[0]:
+                        if k.strip() == program.split('-')[0]:
                             modify_line(f"{dir}/.klaszter", n+1, str(int(rows[n+1])-1))
                     exists = True
                     print("Programpéldány sikeresen leállítva!")
