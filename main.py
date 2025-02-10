@@ -5,7 +5,6 @@ from datetime import datetime
 
 dir = input("Add meg a dirt: ")
 
-klaszter = open(f'{dir}/.klaszter', 'r')
 
 def menu():
     print("1. Monitoring")
@@ -20,17 +19,17 @@ def menu():
     if muvelet == "1":
         monitoring()
     elif muvelet == "2":
-        torles()
+        delete()
     elif muvelet == "3":
-        hozzaadas()
+        add_computer()
     elif muvelet == "4":
-        program_leallitas()
+        stop_program()
     elif muvelet == "5":
-        modositas()
+        modify()
     elif muvelet == "6":
-        uj_program_futtatasa()
+        run_new_program()
     elif muvelet == "7":
-        programpeldany_leallitas()
+        stop_specific_program()
     elif muvelet == "8":
         exit()
     else:
@@ -210,8 +209,8 @@ def monitoring():
         else:
             print("Nincs futó példány ezzel a névvel.")
 
-def torles():
-    ciklus = 0
+def delete():
+    cycle = 0
     print("-------------------------")
     szamito = input("Számítógép neve: ")
     if szamito in os.listdir(dir) and os.path.isfile(f'{dir}/{szamito}/.szamitogep_config'):
@@ -224,11 +223,11 @@ def torles():
                     print(k)
                     programok = open(f"{dir}/{szamito}/{k}")
                     for l in programok:
-                        if ciklus < 2:
-                            ciklus += 1
+                        if cycle < 2:
+                            cycle += 1
                             print(l.replace("\n", ""))
                 print("-------------------------")
-                ciklus = 0
+                cycle = 0
         else:
             os.remove(f"{dir}/{szamito}/.szamitogep_config")
             os.rmdir(f"{dir}/{szamito}")
@@ -238,23 +237,23 @@ def torles():
         print("Nincs ilyen számítógép")
         print("-------------------------")
 
-def hozzaadas():
+def add_computer():
     print("-------------------------")
     new_pc = input("Új számítógép neve: ")
     if new_pc in os.listdir(dir):
         print("Ez a számítógép már létezik")
         print("-------------------------")
     else:
-        teljesitmeny1 = int(input("Proccesszor erőforrás: "))
-        teljesitmeny2 = int(input("Memóriakapacítás: "))
+        performance1 = int(input("Proccesszor erőforrás: "))
+        performance2 = int(input("Memóriakapacítás: "))
         os.mkdir(f"{dir}/{new_pc}")
         open(f"{dir}/{new_pc}/.szamitogep_config", "w")
         with open(f"{dir}/{new_pc}/.szamitogep_config", "w") as f:
-            f.write(str(teljesitmeny1)+"\n"+str(teljesitmeny2)+"\n")
+            f.write(str(performance1)+"\n"+str(performance2)+"\n")
         print("Számítógép létrehozva")
         print("-------------------------")
 
-def program_leallitas():
+def stop_program():
     program = input("Melyik programot akarod törölni? ")
     found = False
 
@@ -287,31 +286,31 @@ def program_leallitas():
         print("Nincs ilyen program")
         print("-------------------------")
 
-def modositas():
+def modify():
     n = -1
     program = input("Program neve: ")
     with open(f'{dir}/.klaszter', 'r') as f:
-        sorok = f.readlines()
+        rows = f.readlines()
 
-    for i in sorok:
+    for i in rows:
         n += 1
-        van = False
+        exists = False
         if i.strip() == program:
-            van = True
+            exists = True
             break
     
-    if van == True:
-        x = input("Példányok száma: ")
-        y = input("Processzor erőforrás: ")
-        z = input("Memória erőforrás: ")
-        modify_line(f"{dir}/.klaszter", n+1, x)
-        modify_line(f"{dir}/.klaszter", n+2, y)
-        modify_line(f"{dir}/.klaszter", n+3, z)
+    if exists == True:
+        copies = input("Példányok száma: ")
+        cpu_perf = input("Processzor erőforrás: ")
+        ram_perf = input("Memória erőforrás: ")
+        modify_line(f"{dir}/.klaszter", n+1, copies)
+        modify_line(f"{dir}/.klaszter", n+2, cpu_perf)
+        modify_line(f"{dir}/.klaszter", n+3, ram_perf)
         print("Sikeresen módosítva!")
     else:
         print("Nincs ilyen program!")
 
-def programpeldany_leallitas():
+def stop_specific_program():
     for i in os.listdir(dir):
         if os.path.isdir(f'{dir}/{i}') and os.path.isfile(f'{dir}/{i}/.szamitogep_config') and os.listdir(f'{dir}/{i}') != ['.szamitogep_config']:
             print(i+":")
@@ -319,30 +318,30 @@ def programpeldany_leallitas():
                 if ".szamitogep_config" not in j:
                     print("\t" + j)
 
-    x = input("Melyik programot akarod leállítani: ")
+    program = input("Melyik programot akarod leállítani: ")
 
-    van = False
+    exists = False
 
     with open(f'{dir}/.klaszter', 'r', encoding="utf-8") as f:
-        sorok = f.readlines()
+        rows = f.readlines()
     n = -1
     for i in os.listdir(dir):
         if os.path.isdir(f'{dir}/{i}') and os.path.isfile(f'{dir}/{i}/.szamitogep_config') and os.listdir(f'{dir}/{i}') != ['.szamitogep_config']:
             for j in os.listdir(f"{dir}/{i}"):
-                if x == j:
+                if program == j:
                     os.remove(f"{dir}/{i}/{x}")
-                    for k in sorok:
+                    for k in rows:
                         n += 1
                         if k.strip() == x.split('-')[0]:
-                            modify_line(f"{dir}/.klaszter", n+1, str(int(sorok[n+1])-1))
-                    van = True
+                            modify_line(f"{dir}/.klaszter", n+1, str(int(rows[n+1])-1))
+                    exists = True
                     print("Programpéldány sikeresen leállítva!")
                     break
 
-    if van == False:
+    if exists == False:
         print("Nincs ilyen program!")
 
-def uj_program_futtatasa():
+def run_new_program():
 
     def generate_unique_id(program_name):
         unique_id = program_name + '-' + ''.join(random.choices(string.ascii_letters + string.digits, k=6))
