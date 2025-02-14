@@ -19,17 +19,17 @@ def menu():
     if muvelet == "1":
         monitoring()
     elif muvelet == "2":
-        delete()
+        delete_computer()
     elif muvelet == "3":
         add_computer()
     elif muvelet == "4":
         stop_program()
     elif muvelet == "5":
-        modify()
+        modify_program()
     elif muvelet == "6":
-        run_new_program()
+        run_new_instance()
     elif muvelet == "7":
-        stop_specific_program()
+        stop_instance()
     elif muvelet == "8":
         exit()
     else:
@@ -209,19 +209,18 @@ def monitoring():
         else:
             print("Nincs futó példány ezzel a névvel.")
 
-def delete():
+def delete_computer():
     cycle = 0
     print("-------------------------")
-    szamito = input("Számítógép neve: ")
-    if szamito in os.listdir(dir) and os.path.isfile(f'{dir}/{szamito}/.szamitogep_config'):
-        gepszam = os.listdir(f"{dir}/{szamito}")
-        if gepszam != ['.szamitogep_config']:
+    pc = input("Számítógép neve: ")
+    if pc in os.listdir(dir) and os.path.isfile(f'{dir}/{pc}/.szamitogep_config'):
+        if os.listdir(f"{dir}/{pc}") != ['.szamitogep_config']:
             print("A számítógép nem üres")
             print("Futó programok:")
-            for k in os.listdir(f"{dir}/{szamito}"):
+            for k in os.listdir(f"{dir}/{pc}"):
                 if ".szamitogep_config" not in k:
                     print(k)
-                    programok = open(f"{dir}/{szamito}/{k}")
+                    programok = open(f"{dir}/{pc}/{k}")
                     for l in programok:
                         if cycle < 2:
                             cycle += 1
@@ -229,8 +228,8 @@ def delete():
                 print("-------------------------")
                 cycle = 0
         else:
-            os.remove(f"{dir}/{szamito}/.szamitogep_config")
-            os.rmdir(f"{dir}/{szamito}")
+            os.remove(f"{dir}/{pc}/.szamitogep_config")
+            os.rmdir(f"{dir}/{pc}")
             print("A számítógép törölve")
             print("-------------------------")
     else:
@@ -286,7 +285,7 @@ def stop_program():
         print("Nincs ilyen program")
         print("-------------------------")
 
-def modify():
+def modify_program():
     n = -1
     program = input("Program neve: ")
     with open(f'{dir}/.klaszter', 'r') as f:
@@ -310,7 +309,7 @@ def modify():
     else:
         print("Nincs ilyen program!")
 
-def stop_specific_program():
+def stop_instance():
     for i in os.listdir(dir):
         if os.path.isdir(f'{dir}/{i}') and os.path.isfile(f'{dir}/{i}/.szamitogep_config') and os.listdir(f'{dir}/{i}') != ['.szamitogep_config']:
             print(i+":")
@@ -341,8 +340,7 @@ def stop_specific_program():
     if exists == False:
         print("Nincs ilyen program!")
 
-def run_new_program():
-
+def run_new_instance():
     def generate_unique_id(program_name):
         unique_id = program_name + '-' + ''.join(random.choices(string.ascii_letters + string.digits, k=6))
         return unique_id
