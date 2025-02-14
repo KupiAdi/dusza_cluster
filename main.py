@@ -346,7 +346,7 @@ def run_new_instance():
         return unique_id
 
     def get_program_resources(program_name):
-        with open(".klaszter", "r", encoding="utf-8") as file:
+        with open(f"{dir}/.klaszter", "r", encoding="utf-8") as file:
             lines = file.readlines()
             for i in range(0, len(lines), 4):
                 if lines[i].strip() == program_name:
@@ -357,16 +357,16 @@ def run_new_instance():
         return None, None, None, None
 
     def update_instances_count(program_name, instances_index):
-        with open(".klaszter", "r", encoding="utf-8") as file:
+        with open(f"{dir}/.klaszter", "r", encoding="utf-8") as file:
             lines = file.readlines()
         
         lines[instances_index] = str(int(lines[instances_index].strip()) + 1) + "\n"
         
-        with open(".klaszter", "w", encoding="utf-8") as file:
+        with open(f"{dir}/.klaszter", "w", encoding="utf-8") as file:
             file.writelines(lines)
 
     def get_computer_resources(new_pc):
-        config_path = os.path.join(new_pc, ".szamitogep_config")
+        config_path = os.path.join(f"{dir}/{new_pc}", ".szamitogep_config")
         if os.path.exists(config_path):
             with open(config_path, "r", encoding="utf-8") as file:
                 cpu_available = int(file.readline().strip())
@@ -375,7 +375,7 @@ def run_new_instance():
         return None, None
 
     def check_resources_and_create_file(program_name, new_pc):
-        if not os.path.exists(f"./{new_pc}"):
+        if not os.path.exists(f"{dir}/{new_pc}"):
             print("A megadott számítógép nem létezik.")
             return False
 
@@ -396,7 +396,7 @@ def run_new_instance():
             return False
 
         unique_id = generate_unique_id(program_name)
-        file_path = os.path.join(new_pc, unique_id)
+        file_path = os.path.join(f"{dir}/{new_pc}", unique_id)
         
         with open(file_path, "w", encoding="utf-8") as file:
             current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
