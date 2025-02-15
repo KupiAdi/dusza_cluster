@@ -217,14 +217,14 @@ def delete_computer():
         if os.listdir(f"{dir}/{pc}") != ['.szamitogep_config']:
             print("A számítógép nem üres")
             print("Futó programok:")
-            for k in os.listdir(f"{dir}/{pc}"):
-                if ".szamitogep_config" not in k:
-                    print(k)
-                    programok = open(f"{dir}/{pc}/{k}")
-                    for l in programok:
+            for i in os.listdir(f"{dir}/{pc}"):
+                if ".szamitogep_config" not in i:
+                    print(i)
+                    program = open(f"{dir}/{pc}/{i}")
+                    for j in program:
                         if cycle < 2:
                             cycle += 1
-                            print(l.replace("\n", ""))
+                            print(j.replace("\n", ""))
                 print("-------------------------")
                 cycle = 0
         else:
