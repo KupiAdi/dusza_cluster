@@ -220,7 +220,7 @@ def delete_computer():
             for i in os.listdir(f"{dir}/{pc}"):
                 if ".szamitogep_config" not in i:
                     print(i)
-                    program = open(f"{dir}/{pc}/{i}")
+                    program = open(f"{dir}/{pc}/{i}", encoding="utf-8")
                     for j in program:
                         if cycle < 2:
                             cycle += 1
@@ -235,6 +235,7 @@ def delete_computer():
     else:
         print("Nincs ilyen számítógép")
         print("-------------------------")
+    program.close()
 
 def add_computer():
     print("-------------------------")
@@ -246,7 +247,6 @@ def add_computer():
         performance1 = int(input("Proccesszor erőforrás: "))
         performance2 = int(input("Memóriakapacítás: "))
         os.mkdir(f"{dir}/{new_pc}")
-        open(f"{dir}/{new_pc}/.szamitogep_config", "w")
         with open(f"{dir}/{new_pc}/.szamitogep_config", "w") as f:
             f.write(str(performance1)+"\n"+str(performance2)+"\n")
         print("Számítógép létrehozva")
