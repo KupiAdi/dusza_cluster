@@ -562,8 +562,8 @@ class MainApp(ctk.CTk):
         cycle = 0
         global update
         if pc in os.listdir(dir) and os.path.isfile(f'{dir}/{pc}/.szamitogep_config'):
-            update = False
             if os.listdir(f"{dir}/{pc}") != ['.szamitogep_config']:
+                update = False
                 for widget in self.main_frame.winfo_children():
                     widget.destroy()
                 ctk.CTkLabel(self.main_frame, text=translations[lang]["messages"]["computer_not_empty"], font=("Arial", 16)).pack(pady=10)
