@@ -1,7 +1,6 @@
 # Cluster Manager Dokumentáció
 
-## Készítette: print("Hello World")
-
+## Készítette a print("Hello World") csapat
 
 ## Bevezetés
 Ez a program egy klaszter alapú számítógép- és program menedzsment eszköz, amely két fő komponensből áll: egy parancssoros felületből (main.py) és egy grafikus felületből (gui.pyw). A szoftver célja, hogy segítsen a számítógépeken futó programok erőforrásainak nyomon követésében, konfigurálásában, valamint a futó alkalmazások monitorozásában és kezelésében.
