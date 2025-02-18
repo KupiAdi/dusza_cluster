@@ -283,21 +283,24 @@ class MainApp(ctk.CTk):
         for button in self.button_frames:
             button.grid_forget()
 
-        self.input_frame = ctk.CTkFrame(self.footer_frame)
+        self.input_frame = ctk.CTkFrame(self.footer_frame, fg_color="transparent")
         self.input_frame.grid(row=0, column=0, columnspan=4, padx=5, pady=5, sticky="ew")
 
         self.input_entries = []
 
         for input_name in input_names:
-            input_entry = ctk.CTkEntry(self.input_frame, placeholder_text=input_name)
-            input_entry.pack(pady=10)
+            input_entry = ctk.CTkEntry(self.input_frame, placeholder_text=input_name, justify='center')
+            input_entry.pack(side="top", padx=10, pady=5, expand=True, fill="both")
             self.input_entries.append(input_entry)
 
-        self.ok_button = ctk.CTkButton(self.input_frame, text="OK", command=lambda: self.on_ok_button(function_name))
-        self.ok_button.pack(pady=10, padx=10)
+        self.button_frame = ctk.CTkFrame(self.input_frame, fg_color="transparent")
+        self.button_frame.pack(side="top", padx=10, pady=5, expand=True, fill="both")
+        
+        self.ok_button = ctk.CTkButton(self.button_frame, text="OK", command=lambda: self.on_ok_button(function_name))
+        self.ok_button.pack(side="left", padx=10, expand=True, fill="both")
 
-        self.cancel_button = ctk.CTkButton(self.input_frame, text=button_labels["cancel"], command=self.cancel_input)
-        self.cancel_button.pack(pady=10, padx=10)
+        self.cancel_button = ctk.CTkButton(self.button_frame, text=button_labels["cancel"], command=self.cancel_input)
+        self.cancel_button.pack(side="left", padx=10, expand=True, fill="both")
 
     def on_ok_button(self, function_name):
         correct = True
