@@ -1,1 +1,0 @@
-Futtatás: python main.py
