@@ -9,7 +9,6 @@ import re
 dir = ""
 lang = "hu"
 appearance_mode = "System"
-update = True
 
 translations = {
     "hu": {
@@ -137,9 +136,7 @@ def refresh_ui(app):
         for widget in app.header_frame.winfo_children():
             widget.destroy()
         app.create_header()
-        for widget in app.main_frame.winfo_children():
-            widget.destroy()
-        app.create_boxes(app.status())
+        app.refresh_main_view()
         for button in app.button_frames:
             button.grid_forget()
         app.create_buttons()
@@ -345,13 +342,10 @@ class MainApp(ctk.CTk):
                 self.create_buttons()
 
     def refresh_main_view(self):
-        if update == True:
-            for widget in self.main_frame.winfo_children():
-                widget.destroy()
+        for widget in self.main_frame.winfo_children():
+            widget.destroy()
 
-            self.create_boxes(self.status())
-
-            self.after(2500, self.refresh_main_view)
+        self.create_boxes(self.status())
 
     def cancel_input(self):
         self.input_frame.destroy()
@@ -396,10 +390,6 @@ class MainApp(ctk.CTk):
 
     def exit_program(self):
         exit()
-
-    def set_update_true(self):
-        global update
-        update = True
         
     def modify_line(self, file_path, line_number, new_content):
         with open(file_path, 'r') as file:
@@ -506,7 +496,6 @@ class MainApp(ctk.CTk):
         ctk.CTkButton(self.main_frame, text="OK", command=self.refresh_main_view).pack(pady=20)
 
     def monitoring(self, query):
-        global update
         total_active = 0
         total_inactive = 0
         program_instances = {}
@@ -543,7 +532,6 @@ class MainApp(ctk.CTk):
                                     total_inactive += 1
 
         if query in program_instances:
-            update = False
             for widget in self.main_frame.winfo_children():
                 widget.destroy()
             if lang == "hu":
@@ -554,16 +542,14 @@ class MainApp(ctk.CTk):
                 comp, unique_id, cpu_needed, ram_needed, status = instance
                 ctk.CTkLabel(self.main_frame, text=f"{translations[lang]["messages"]["computer"]}: {comp}, {translations[lang]["messages"]["id"]}: {unique_id}, {translations[lang]["messages"]["resource_requirements"]}: CPU {cpu_needed}, RAM {ram_needed}, {translations[lang]["messages"]["status"]}: {status}", font=("Arial", 16)).pack()
             ctk.CTkLabel(self.main_frame, text=f"{translations[lang]["messages"]["total_running_instances"]}: {len(program_instances[query])}", font=("Arial", 16)).pack(pady=10)
-            ctk.CTkButton(self.main_frame, text="OK", command=lambda: [self.set_update_true(), self.refresh_main_view()]).pack(pady=10)
+            ctk.CTkButton(self.main_frame, text="OK", command=self.refresh_main_view).pack(pady=10)
         else:
             messagebox.showerror(title="Error", message=translations[lang]["messages"]["no_running_instance_with_this_name"])
 
     def delete_computer(self, pc):
         cycle = 0
-        global update
         if pc in os.listdir(dir) and os.path.isfile(f'{dir}/{pc}/.szamitogep_config'):
             if os.listdir(f"{dir}/{pc}") != ['.szamitogep_config']:
-                update = False
                 for widget in self.main_frame.winfo_children():
                     widget.destroy()
                 ctk.CTkLabel(self.main_frame, text=translations[lang]["messages"]["computer_not_empty"], font=("Arial", 16)).pack(pady=10)
@@ -578,10 +564,11 @@ class MainApp(ctk.CTk):
                                 ctk.CTkLabel(self.main_frame, text=l.replace("\n", ""), font=("Arial", 16)).pack()
                     ctk.CTkLabel(self.main_frame, text="-------------------------", font=("Arial", 16)).pack()
                     cycle = 0
-                ctk.CTkButton(self.main_frame, text="OK", command=lambda: [self.set_update_true(), self.refresh_main_view()]).pack(pady=10)
+                ctk.CTkButton(self.main_frame, text="OK", command=self.refresh_main_view).pack(pady=10)
             else:
                 os.remove(f"{dir}/{pc}/.szamitogep_config")
                 os.rmdir(f"{dir}/{pc}")
+                self.refresh_main_view()
         else:
             messagebox.showerror(title="Error", message=translations[lang]["messages"]["no_computer_found"])
 
@@ -593,6 +580,8 @@ class MainApp(ctk.CTk):
             open(f"{dir}/{new_pc}/.szamitogep_config", "w")
             with open(f"{dir}/{new_pc}/.szamitogep_config", "w") as f:
                 f.write(str(performance1)+"\n"+str(performance2)+"\n")
+
+        self.refresh_main_view()
 
     def stop_program(self, program):
         found = False
@@ -622,6 +611,8 @@ class MainApp(ctk.CTk):
         if not found:
             messagebox.showerror(title="Error", message=translations[lang]["messages"]["no_program_found"])
 
+        self.refresh_main_view()
+
     def modify_program(self, program, copies, cpu_perf, ram_perf):
         n = -1
         with open(f'{dir}/.klaszter', 'r') as f:
@@ -640,6 +631,8 @@ class MainApp(ctk.CTk):
             self.modify_line(f"{dir}/.klaszter", n+3, ram_perf)
         else:
             messagebox.showerror(title="Error", message=translations[lang]["messages"]["no_program_found"])
+
+        self.refresh_main_view()
 
     def stop_instance(self, program):
         exists = False
@@ -660,6 +653,8 @@ class MainApp(ctk.CTk):
                         break
         if exists == False:
             messagebox.showerror(title="Error", message=translations[lang]["messages"]["no_program_found"])
+
+        self.refresh_main_view()
 
     def run_new_instance(self, new_pc, new_program):
         def generate_unique_id(program_name):
@@ -728,6 +723,8 @@ class MainApp(ctk.CTk):
 
         if check_resources_and_create_file(new_program, new_pc) == False:
             messagebox.showerror(title="Error", message=translations[lang]["messages"]["invalid_computer_program_name"])
+
+        self.refresh_main_view()
 
 if __name__ == "__main__":
     input_app = InputApp()
