@@ -8,7 +8,7 @@ import re
 
 dir = ""
 lang = "hu"
-appearance_mode = "System"
+appearance_mode = "Dark"
 
 translations = {
     "hu": {
@@ -33,8 +33,7 @@ translations = {
             "cancel": "Mégse",
             "back": "Vissza",
             "dark": ["Sötét", "Dark"],
-            "light": ["Világos", "Light"],
-            "system": ["Rendszer", "System"]
+            "light": ["Világos", "Light"]
         },
         "messages": {
             "cluster_not_found": "A .klaszter fájl nem található!",
@@ -88,8 +87,7 @@ translations = {
             "cancel": "Cancel",
             "back": "Back",
             "dark": "Dark",
-            "light": "Light",
-            "system": "System"
+            "light": "Light"
         },
         "messages": {
             "cluster_not_found": "The .klaszter file not found!",
@@ -232,6 +230,12 @@ class MainApp(ctk.CTk):
                 ctk.CTkLabel(box, text=results[i]["active_programs"][j]).pack(fill="x", padx=5)
 
     def create_header(self):
+        global appearance_mode
+        if appearance_mode == "Light":
+            self.header_frame.configure(fg_color="white")
+        elif appearance_mode == "Dark":
+            self.header_frame.configure(fg_color="gray20")
+
         ctk.CTkLabel(self.header_frame, text="Cluster manager", font=("Arial", 22)).pack(side="left", padx=10 ,pady=10)
         self.lang_dropdown = ctk.CTkOptionMenu(self.header_frame, values=["hu", "en"], command=lambda new_lang: update_language(new_lang, self))
         self.lang_dropdown.pack(side="right", padx=10, pady=10)
@@ -240,11 +244,11 @@ class MainApp(ctk.CTk):
         ctk.CTkLabel(self.header_frame, text=translations[lang]["messages"]["language"]).pack(side="right", pady=10)
 
         if lang == "hu":
-            self.appearance_mode_dropdown = ctk.CTkOptionMenu(self.header_frame, values=[translations[lang]["button_labels"]["dark"][0], translations[lang]["button_labels"]["light"][0], translations[lang]["button_labels"]["system"][0]], command=self.change_appearance_mode_event)
+            self.appearance_mode_dropdown = ctk.CTkOptionMenu(self.header_frame, values=[translations[lang]["button_labels"]["dark"][0], translations[lang]["button_labels"]["light"][0]], command=self.change_appearance_mode_event)
             self.appearance_mode_dropdown.set(translations[lang]["button_labels"][appearance_mode.lower()][0])
             self.appearance_mode_dropdown.pack(side="right", padx=10, pady=10)
         elif lang == "en":
-            self.appearance_mode_dropdown = ctk.CTkOptionMenu(self.header_frame, values=[translations[lang]["button_labels"]["dark"], translations[lang]["button_labels"]["light"], translations[lang]["button_labels"]["system"]], command=self.change_appearance_mode_event)
+            self.appearance_mode_dropdown = ctk.CTkOptionMenu(self.header_frame, values=[translations[lang]["button_labels"]["dark"], translations[lang]["button_labels"]["light"]], command=self.change_appearance_mode_event)
             self.appearance_mode_dropdown.set(appearance_mode)
             self.appearance_mode_dropdown.pack(side="right", padx=10, pady=10)
             
@@ -363,12 +367,13 @@ class MainApp(ctk.CTk):
             elif new_appearance_mode == "Sötét":
                 appearance_mode = translations[lang]["button_labels"]["dark"][1]
                 ctk.set_appearance_mode(appearance_mode)
-            elif new_appearance_mode == "Rendszer":
-                appearance_mode = translations[lang]["button_labels"]["system"][1]
-                ctk.set_appearance_mode(appearance_mode)
         elif lang == "en":
             appearance_mode = new_appearance_mode
             ctk.set_appearance_mode(new_appearance_mode)
+
+        for widget in self.header_frame.winfo_children():
+            widget.destroy()
+        self.create_header()
 
     def monitoring_btn(self):
         self.show_input(function_name="monitoring", input_keys=["program_name"])
