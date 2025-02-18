@@ -210,12 +210,16 @@ class MainApp(ctk.CTk):
         self.protocol("WM_DELETE_WINDOW", self.exit_program)
 
     def create_boxes(self, results):
+        global appearance_mode
         cols = 3
         total_boxes = len(results)
         for i in range(total_boxes):
             row = i // cols
             col = i % cols
-            box = ctk.CTkFrame(self.main_frame, fg_color="gray40", corner_radius=5)
+            if appearance_mode == "Dark":
+                box = ctk.CTkFrame(self.main_frame, fg_color="gray40", corner_radius=5)
+            elif appearance_mode == "Light":
+                box = ctk.CTkFrame(self.main_frame, fg_color="white", corner_radius=5)
             box.grid(row=row, column=col, padx=10, pady=10, sticky="nsew")
 
             self.main_frame.grid_columnconfigure(col, weight=1)
@@ -255,7 +259,12 @@ class MainApp(ctk.CTk):
         ctk.CTkLabel(self.header_frame, text=translations[lang]["messages"]["theme"]).pack(side="right", pady=10)
 
     def create_buttons(self):
+        global appearance_mode
         button_labels = translations[lang]["button_labels"]
+        if appearance_mode == "Dark":
+            self.footer_frame.configure(fg_color="gray30")
+        elif appearance_mode == "Light":
+            self.footer_frame.configure(fg_color="white")
 
         buttons = [
             (button_labels["monitoring"], self.monitoring_btn),
@@ -374,6 +383,10 @@ class MainApp(ctk.CTk):
         for widget in self.header_frame.winfo_children():
             widget.destroy()
         self.create_header()
+        self.refresh_main_view()
+        for button in self.button_frames:
+            button.grid_forget()
+        self.create_buttons()
 
     def monitoring_btn(self):
         self.show_input(function_name="monitoring", input_keys=["program_name"])
