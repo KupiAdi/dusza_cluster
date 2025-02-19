@@ -235,7 +235,6 @@ def delete_computer():
     else:
         print("Nincs ilyen számítógép")
         print("-------------------------")
-    program.close()
 
 def add_computer():
     print("-------------------------")
@@ -253,24 +252,20 @@ def add_computer():
         print("-------------------------")
 
 def stop_program():
-    program = input("Melyik programot akarod törölni? ")
+    program = input("Melyik programot akarod leállítani? ")
     found = False
 
     with open(f"{dir}/.klaszter", "r") as f:
         lines = f.readlines()
-    new_lines = []
-    skip_count = 0
     for i in range(len(lines)):
-        if skip_count > 0:
-            skip_count -= 1
-            continue
         if lines[i].strip() == program:
-            skip_count = 3
             found = True
-            continue
-        new_lines.append(lines[i])
+            lines[i + 1] = "0\n"
+            break
     with open(f"{dir}/.klaszter", "w") as f:
-        f.writelines(new_lines)
+        f.writelines(lines)
+
+    print("-------------------------")
 
     for i in os.listdir(dir):
         path = f"{dir}/{i}"
