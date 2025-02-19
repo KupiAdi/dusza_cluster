@@ -120,6 +120,6 @@ A projekt két fő forrásfájlra tagolódik:
          - Futtassuk a `main.py` scriptet a parancssorból:  
              `python main.py`
      - **Grafikus felület futtatása:**
-         - Győződjünk meg arról, hogy a projekt főkönyvtárban van a szükséges `.klaszter` fájl.
+         - Navigáljunk a projekt könyvtárába.
          - Futtassuk a `gui.pyw` scriptet:  
              `python gui.pyw`
