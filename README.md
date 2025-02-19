@@ -80,22 +80,47 @@ A program két felhasználói felülettel rendelkezik:
 A projekt két fő forrásfájlra tagolódik:
 
 1. **main.py:**
-     - Feladata a parancssoros felület biztosítása.
-     - Tartalmazza a klaszter állapotának lekérdezéséhez, monitorozásához, számítógépek és programok hozzáadásához/törléséhez szükséges függvényeket.
-     - Főbb modulok:
-         - Menu rendszer és felhasználói interakciók kezelése.
-         - Fájlok módosítása, konfigurációs bejegyzések kezelése (`.szamitogep_config`, `.klaszter`).
-         - Program példányok futtatásához szükséges logika (pl. erőforrások ellenőrzése, egyedi azonosító generálása).
+    - Feladata a parancssoros felület biztosítása.
+    - Tartalmazza a klaszter állapotának lekérdezéséhez, monitorozásához, számítógépek és programok hozzáadásához/törléséhez szükséges függvényeket.
+    - Főbb modulok:
+        - Menu rendszer és felhasználói interakciók kezelése.
+        - Fájlok módosítása, konfigurációs bejegyzések kezelése (`.szamitogep_config`, `.klaszter`).
+        - Program példányok futtatásához szükséges logika (pl. erőforrások ellenőrzése, egyedi azonosító generálása).
 
 2. **gui.pyw:**
-     - A grafikus felület megvalósítása a CustomTkinter (ctk) modul segítségével.
-     - Felépítése több ablakrészre:
-         - Kezdőképernyő (InputApp): A klaszter könyvtárának beállítása.
-         - Fő ablak (MainApp): Klaszter állapotának vizuális megjelenítése, interaktív gombok és információs dobozok.
-     - Feladatok:
-         - Dinamikus nyelvi támogatás (hu/en) a `translations` szótár alapján.
-         - Különböző műveletek indítása gombnyomásra, amelyek meghívják a megfelelő funkciókat a backend logikából.
-         - Értesítések és hibakezelés például messagebox-ok segítségével.
+    - A grafikus felület megvalósítása a CustomTkinter (ctk) modul segítségével.
+    - Felépítése több ablakrészre:
+        - Kezdőképernyő (InputApp): A klaszter könyvtárának beállítása.
+        - Fő ablak (MainApp): Klaszter állapotának vizuális megjelenítése, interaktív gombok és információs dobozok.
+    - Feladatok:
+        - Dinamikus nyelvi támogatás (hu/en) a `translations` szótár alapján.
+        - Különböző műveletek indítása gombnyomásra, amelyek meghívják a megfelelő funkciókat a backend logikából.
+        - Értesítések és hibakezelés például messagebox-ok segítségével.
+
+### A fájlok értelmezése
+
+1. **.klaszter:**
+    - A klaszter konfigurációs fájlja, amely tartalmazza a programok adatait.
+    - Fájl szerkezete: a sorokat újsor (\n) karakter választja el, egy adatot 4 egymást követő sor ír le.
+        - első sor: a program neve
+        - második sor: a példányok száma
+        - harmadik sor: processzor használat
+        - negyedik sor: memória használat
+
+2. **.szamitogep_config:**
+    - Egy adott számítógép konfigurációs fájlja, amely tartalmazza a számítógép processzor és memória erőforrás kapacitásait.
+    - Fájl szerkezete: a sorokat újsor (\n) karakter választja el.
+        - első sor: a processzor erőforrás kapacitása millimagban
+        - második sor: a memória erőforrás kapacitása MB-ban
+
+3. **programnev-abcdef:**
+    - Egy adott program, ami éppen fut a számítógépen.
+    - Fájlnév felépítése: a kötőjel előtt a program neve, utána egy 6 random karakterből álló egyedi azonosító.
+    - Fájl szerkezete: a sorokat újsor (\n) karakter választja el.
+        - első sor: a folyamat indításának ideje
+        - második sor: A folyamat állapota
+        - harmadik sor: a program által használt processzor erőforrás
+        - negyedik sor: a program által használt memória erőforrás
 
 ### Használt technológiák és választásuk indoklása
 - **Python:**  
