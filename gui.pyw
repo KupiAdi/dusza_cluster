@@ -139,13 +139,19 @@ def refresh_ui(app):
             button.grid_forget()
         app.create_buttons()
 
+def on_enter_key(event, app):
+    if isinstance(app, InputApp):
+        app.open_main_app()
+    elif isinstance(app, MainApp):
+        app.on_ok_button(app.function_name)
+
 ctk.set_appearance_mode(appearance_mode)
 ctk.set_default_color_theme("blue")
 
 class InputApp(ctk.CTk):
     def __init__(self):
         super().__init__()
-
+        self.bind('<Return>', lambda event: on_enter_key(event, self))
         self.title("Cluster manager")
         self.geometry("400x200")
 
@@ -183,6 +189,7 @@ class InputApp(ctk.CTk):
 class MainApp(ctk.CTk):
     def __init__(self):
         super().__init__()
+        self.bind('<Return>', lambda event: on_enter_key(event, self))
 
         global klaszter
         klaszter = open(f'{dir}/.klaszter', 'r')
@@ -314,6 +321,9 @@ class MainApp(ctk.CTk):
 
         self.cancel_button = ctk.CTkButton(self.button_frame, text=button_labels["cancel"], command=self.cancel_input)
         self.cancel_button.pack(side="left", padx=10, expand=True, fill="both")
+
+        self.bind('<Return>', lambda event: self.on_ok_button(function_name))
+        self.bind('<Escape>', lambda event: self.cancel_input())
 
     def on_ok_button(self, function_name):
         correct = True
