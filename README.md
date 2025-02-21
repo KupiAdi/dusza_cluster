@@ -77,7 +77,7 @@ A program két felhasználói felülettel rendelkezik:
 ## Fejlesztői dokumentáció
 
 ### Program logikai és fizikai szerkezete
-A projekt két fő forrásfájlra tagolódik:
+A projekt három fő forrásfájlra tagolódik:
 
 1. **main.py:**
     - Feladata a parancssoros felület biztosítása.
@@ -96,6 +96,9 @@ A projekt két fő forrásfájlra tagolódik:
         - Dinamikus nyelvi támogatás (hu/en) a `translations` szótár alapján.
         - Különböző műveletek indítása gombnyomásra, amelyek meghívják a megfelelő funkciókat a backend logikából.
         - Értesítések és hibakezelés például messagebox-ok segítségével.
+
+3. **translations.py**
+    - Tartalmazza a fordításokat `hu/en` (magyar, angol) nyelvekre, amiket a `gui.pyw` fájlban importálunk.
 
 ### A fájlok értelmezése
 
