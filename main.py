@@ -36,6 +36,7 @@ def menu():
         case _:
             print("Helytelen")
 
+
 def modify_line(file_path, line_number, new_content):
     with open(file_path, 'r') as file:
         lines = file.readlines()
@@ -43,11 +44,11 @@ def modify_line(file_path, line_number, new_content):
     if 0 <= line_number < len(lines):
         lines[line_number] = new_content + '\n'
     else:
-        print(f"A megadott sor száma ({line_number}) kívül esik a fájl sorainak tartományán.")
         return
 
     with open(file_path, 'w') as file:
         file.writelines(lines)
+
 
 def start():
     total_active = 0
@@ -60,12 +61,17 @@ def start():
 
     for pc in os.listdir(dir):
         pc_path = os.path.join(dir, pc)
-        if os.path.isdir(pc_path) and os.path.isfile(os.path.join(pc_path, ".szamitogep_config")):
+        if os.path.isdir(pc_path) and os.path.isfile(
+          os.path.join(pc_path, ".szamitogep_config")):
 
-            with open(os.path.join(pc_path, ".szamitogep_config"), "r", encoding="utf-8") as conf_file:
+            with open(os.path.join(
+              pc_path, ".szamitogep_config"), "r", encoding="utf-8"
+              ) as conf_file:
                 config_lines = conf_file.readlines()
-                max_cpu = int(config_lines[0].strip()) if config_lines else 0
-                max_ram = int(config_lines[1].strip()) if len(config_lines) > 1 else 0
+                max_cpu = int(
+                    config_lines[0].strip()) if config_lines else 0
+                max_ram = int(
+                    config_lines[1].strip()) if len(config_lines) > 1 else 0
             used_cpu = 0
             used_ram = 0
             print("Számítógép:", pc)
@@ -92,7 +98,8 @@ def start():
                                 total_active += 1
                                 if prog_name not in program_instances:
                                     program_instances[prog_name] = []
-                                program_instances[prog_name].append((pc, item, cpu_needed, ram_needed, status))
+                                program_instances[prog_name].append(
+                                    (pc, item, cpu_needed, ram_needed, status))
                             elif status == "INAKTÍV":
                                 total_inactive += 1
             free_cpu = max_cpu - used_cpu
@@ -102,14 +109,14 @@ def start():
             else:
                 cluster_consistent = False
                 if free_ram < 0:
-                    print("Az alkalmazás több RAM-ot használ mint amennyi elérhető")              
+                    print("A gép több RAM-ot használ mint amennyi elérhető")
                 if free_cpu < 0:
-                    print("Az alkalmazás több CPU-t használ mint amennyi elérhető")
+                    print("A gép több CPU-t használ mint amennyi elérhető")
             print("-------------------------")
 
     print("\nÖsszes futó folyamat:")
     print("AKTÍV:", total_active, "INAKTÍV:", total_inactive)
-    
+
     with open(f"{dir}/.klaszter", "r", encoding="utf-8") as f:
         lines = f.readlines()
 
@@ -119,33 +126,43 @@ def start():
             actual_instances = len(program_instances.get(prog, []))
             if expected_instances != actual_instances:
                 cluster_consistent = False
-                print(f"Hibás állapot: {prog} esetén várva {expected_instances}, valós példány: {actual_instances}")
+                print("Hibás állapot:", prog, "esetén várva",
+                      expected_instances, "valós példány:", actual_instances)
     if cluster_consistent:
         print("A klaszter állapota helyes.")
     else:
         print("A klaszter állapota NEM helyes.")
 
+
 def monitoring():
     global program_instances
 
     start()
-        
-    query = input("\nAdja meg a program nevét a részletes lekérdezéshez (üresen hagyva kilép): ").strip()
+
+    query = input(
+        "\nProgram nevét a részletes lekérdezéshez (üresen hagyva kilép): "
+        ).strip()
     if query:
         if query in program_instances:
             print(f"\n{query} futó példányai:")
             for instance in program_instances[query]:
                 comp, unique_id, cpu_needed, ram_needed, status = instance
-                print(f"Számítógép: {comp}, Azonosító: {unique_id}, Erőforrásigény: CPU {cpu_needed}, RAM {ram_needed}, Státusz: {status}")
+                print("Számítógép:", comp,
+                      "Azonosító:", unique_id,
+                      "Erőforrásigény: CPU", cpu_needed,
+                      "RAM", ram_needed,
+                      "Státusz:", status)
             print("Összes fútó példány száma:", len(program_instances[query]))
         else:
             print("Nincs futó példány ezzel a névvel.")
+
 
 def delete_computer():
     cycle = 0
     print("-------------------------")
     pc = input("Számítógép neve: ")
-    if pc in os.listdir(dir) and os.path.isfile(f'{dir}/{pc}/.szamitogep_config'):
+    if pc in os.listdir(dir) and os.path.isfile(
+      f'{dir}/{pc}/.szamitogep_config'):
         if os.listdir(f"{dir}/{pc}") != ['.szamitogep_config']:
             print("A számítógép nem üres")
             print("Futó programok:")
@@ -168,6 +185,7 @@ def delete_computer():
         print("Nincs ilyen számítógép")
         print("-------------------------")
 
+
 def add_computer():
     print("-------------------------")
     new_pc = input("Új számítógép neve: ")
@@ -182,6 +200,7 @@ def add_computer():
             f.write(str(performance1)+"\n"+str(performance2)+"\n")
         print("Számítógép létrehozva")
         print("-------------------------")
+
 
 def stop_program():
     print("-------------------------")
@@ -208,8 +227,9 @@ def stop_program():
 
     if not found:
         print("Nincs ilyen program")
-    
+
     print("-------------------------")
+
 
 def modify_program():
     n = -1
@@ -224,8 +244,8 @@ def modify_program():
         if i.strip() == program:
             exists = True
             break
-    
-    if exists == True:
+
+    if exists:
         copies = input("Példányok száma: ")
         cpu_perf = input("Processzor erőforrás: ")
         ram_perf = input("Memória erőforrás: ")
@@ -237,10 +257,13 @@ def modify_program():
         print("Nincs ilyen program!")
     print("-------------------------")
 
+
 def stop_instance():
     print("-------------------------")
     for i in os.listdir(dir):
-        if os.path.isdir(f'{dir}/{i}') and os.path.isfile(f'{dir}/{i}/.szamitogep_config') and os.listdir(f'{dir}/{i}') != ['.szamitogep_config']:
+        if os.path.isdir(f'{dir}/{i}') and os.path.isfile(
+            f'{dir}/{i}/.szamitogep_config') and os.listdir(
+                f'{dir}/{i}') != ['.szamitogep_config']:
             print(i+":")
             for j in os.listdir(f"{dir}/{i}"):
                 if ".szamitogep_config" not in j:
@@ -255,26 +278,32 @@ def stop_instance():
         rows = f.readlines()
     n = -1
     for i in os.listdir(dir):
-        if os.path.isdir(f'{dir}/{i}') and os.path.isfile(f'{dir}/{i}/.szamitogep_config') and os.listdir(f'{dir}/{i}') != ['.szamitogep_config']:
+        if os.path.isdir(f'{dir}/{i}') and os.path.isfile(
+            f'{dir}/{i}/.szamitogep_config') and os.listdir(
+                f'{dir}/{i}') != ['.szamitogep_config']:
             for j in os.listdir(f"{dir}/{i}"):
                 if program == j:
                     os.remove(f"{dir}/{i}/{program}")
                     for k in rows:
                         n += 1
                         if k.strip() == program.split('-')[0]:
-                            modify_line(f"{dir}/.klaszter", n+1, str(int(rows[n+1])-1))
+                            modify_line(f"{dir}/.klaszter",
+                                        n+1,
+                                        str(int(rows[n+1])-1))
                     exists = True
                     print("Programpéldány sikeresen leállítva!")
                     break
 
-    if exists == False:
+    if not exists:
         print("Nincs ilyen program!")
-    
+
     print("-------------------------")
+
 
 def run_new_instance():
     def generate_unique_id(program_name):
-        unique_id = program_name + '-' + ''.join(random.choices(string.ascii_letters + string.digits, k=6))
+        unique_id = program_name + '-' + ''.join(
+            random.choices(string.ascii_letters + string.digits, k=6))
         return unique_id
 
     def get_program_resources(program_name):
@@ -291,9 +320,10 @@ def run_new_instance():
     def update_instances_count(program_name, instances_index):
         with open(f"{dir}/.klaszter", "r", encoding="utf-8") as file:
             lines = file.readlines()
-        
-        lines[instances_index] = str(int(lines[instances_index].strip()) + 1) + "\n"
-        
+
+        lines[instances_index] = str(int(
+            lines[instances_index].strip()) + 1) + "\n"
+
         with open(f"{dir}/.klaszter", "w", encoding="utf-8") as file:
             file.writelines(lines)
 
@@ -311,8 +341,11 @@ def run_new_instance():
             print("A megadott számítógép nem létezik.")
             return False
 
-        instances, cpu_needed, ram_needed, instances_index = get_program_resources(program_name)
-        
+        (instances,
+         cpu_needed,
+         ram_needed,
+         instances_index) = get_program_resources(program_name)
+
         if cpu_needed is None or ram_needed is None:
             print("A program nem szerepel a klaszter fájlban.")
             return False
@@ -320,7 +353,7 @@ def run_new_instance():
         cpu_available, ram_available = get_computer_resources(new_pc)
 
         if cpu_available is None or ram_available is None:
-            print("A számítógép konfigurációs fájl nem található vagy érvénytelen.")
+            print("A számítógép konfigurációs fájl nem található.")
             return False
 
         if cpu_needed > cpu_available or ram_needed > ram_available:
@@ -329,7 +362,7 @@ def run_new_instance():
 
         unique_id = generate_unique_id(program_name)
         file_path = os.path.join(f"{dir}/{new_pc}", unique_id)
-        
+
         with open(file_path, "w", encoding="utf-8") as file:
             current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             file.write(f"{current_time}\n")
@@ -338,8 +371,8 @@ def run_new_instance():
             file.write(f"{ram_needed}\n")
 
         update_instances_count(program_name, instances_index)
-        
-        print(f"A program új példánya futtatható és a fájl létrejött: {file_path}")
+
+        print(f"A program új példánya létrejött: {file_path}")
         return True
 
     print("-------------------------")
@@ -351,6 +384,7 @@ def run_new_instance():
     else:
         print("Nem teljesültek a feltételek.")
     print("-------------------------")
+
 
 start()
 
