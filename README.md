@@ -76,6 +76,15 @@ A program két felhasználói felülettel rendelkezik:
 
 ## Fejlesztői dokumentáció
 
+### Struktúra
+    - dusza_cluster
+        - .gitignore
+        - gui.pyw - grafikus felület
+        - main.py - main cli felület
+        - translations.py - szótár
+        - requirements.txt
+        - README.md
+
 ### Program logikai és fizikai szerkezete
 A projekt három fő forrásfájlra tagolódik:
 
