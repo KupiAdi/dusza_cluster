@@ -16,24 +16,25 @@ def menu():
     print("7. Adott programpéldány leállítása")
     print("8. Kilépés")
     muvelet = input("Mit akarsz? ")
-    if muvelet == "1":
-        monitoring()
-    elif muvelet == "2":
-        delete_computer()
-    elif muvelet == "3":
-        add_computer()
-    elif muvelet == "4":
-        stop_program()
-    elif muvelet == "5":
-        modify_program()
-    elif muvelet == "6":
-        run_new_instance()
-    elif muvelet == "7":
-        stop_instance()
-    elif muvelet == "8":
-        exit()
-    else:
-        print("Helytelen")
+    match muvelet:
+        case "1":
+            monitoring()
+        case "2":
+            delete_computer()
+        case "3":
+            add_computer()
+        case "4":
+            stop_program()
+        case "5":
+            modify_program()
+        case "6":
+            run_new_instance()
+        case "7":
+            stop_instance()
+        case "8":
+            exit()
+        case _:
+            print("Helytelen")
 
 def modify_line(file_path, line_number, new_content):
     with open(file_path, 'r') as file:
@@ -52,6 +53,7 @@ def start():
     total_active = 0
     total_inactive = 0
     cluster_consistent = True
+    global program_instances
     program_instances = {}
     print("Klaszter Állapotának Áttekintése:\n")
     print("-------------------------")
@@ -124,79 +126,9 @@ def start():
         print("A klaszter állapota NEM helyes.")
 
 def monitoring():
-    total_active = 0
-    total_inactive = 0
-    cluster_consistent = True
-    program_instances = {}
-    print("Klaszter Állapotának Áttekintése:\n")
-    print("-------------------------")
+    global program_instances
 
-    for pc in os.listdir(dir):
-        pc_path = os.path.join(dir, pc)
-        if os.path.isdir(pc_path) and os.path.isfile(os.path.join(pc_path, ".szamitogep_config")):
-
-            with open(os.path.join(pc_path, ".szamitogep_config"), "r", encoding="utf-8") as conf_file:
-                config_lines = conf_file.readlines()
-                max_cpu = int(config_lines[0].strip()) if config_lines else 0
-                max_ram = int(config_lines[1].strip()) if len(config_lines) > 1 else 0
-            used_cpu = 0
-            used_ram = 0
-            print("Számítógép:", pc)
-            print("Max CPU:", max_cpu, "Max RAM:", max_ram)
-
-            for item in os.listdir(pc_path):
-                if item == ".szamitogep_config":
-                    continue
-                file_path = os.path.join(pc_path, item)
-                if os.path.isfile(file_path):
-                    with open(file_path, "r", encoding="utf-8") as prog_file:
-                        lines = prog_file.readlines()
-
-                        if len(lines) >= 4:
-                            status = lines[1].strip()
-                            cpu_needed = int(lines[2].strip())
-                            ram_needed = int(lines[3].strip())
-                            if status == "AKTÍV":
-                                used_cpu += cpu_needed
-                                used_ram += ram_needed
-
-                            prog_name = item.split('-')[0]
-                            if status == "AKTÍV":
-                                total_active += 1
-                                if prog_name not in program_instances:
-                                    program_instances[prog_name] = []
-                                program_instances[prog_name].append((pc, item, cpu_needed, ram_needed, status))
-                            elif status == "INAKTÍV":
-                                total_inactive += 1
-            free_cpu = max_cpu - used_cpu
-            free_ram = max_ram - used_ram
-            if free_ram >= 0 and free_cpu >= 0:
-                print("Szabad erőforrások: CPU:", free_cpu, "RAM:", free_ram)
-            else:
-                cluster_consistent = False
-                if free_ram < 0:
-                    print("Az alkalmazás több RAM-ot használ mint amennyi elérhető")              
-                if free_cpu < 0:
-                    print("Az alkalmazás több CPU-t használ mint amennyi elérhető")
-            print("-------------------------")
-
-    print("\nÖsszes futó folyamat:")
-    print("AKTÍV:", total_active, "INAKTÍV:", total_inactive)
-    
-    with open(f"{dir}/.klaszter", "r", encoding="utf-8") as f:
-        lines = f.readlines()
-
-        for i in range(0, len(lines), 4):
-            prog = lines[i].strip()
-            expected_instances = int(lines[i+1].strip())
-            actual_instances = len(program_instances.get(prog, []))
-            if expected_instances != actual_instances:
-                cluster_consistent = False
-                print(f"Hibás állapot: {prog} esetén várva {expected_instances}, valós példány: {actual_instances}")
-    if cluster_consistent:
-        print("A klaszter állapota helyes.")
-    else:
-        print("A klaszter állapota NEM helyes.")
+    start()
         
     query = input("\nAdja meg a program nevét a részletes lekérdezéshez (üresen hagyva kilép): ").strip()
     if query:
@@ -252,6 +184,7 @@ def add_computer():
         print("-------------------------")
 
 def stop_program():
+    print("-------------------------")
     program = input("Melyik programot akarod leállítani? ")
     found = False
 
@@ -265,8 +198,6 @@ def stop_program():
     with open(f"{dir}/.klaszter", "w") as f:
         f.writelines(lines)
 
-    print("-------------------------")
-
     for i in os.listdir(dir):
         path = f"{dir}/{i}"
         if os.path.isdir(path):
@@ -274,14 +205,15 @@ def stop_program():
                 if program in j:
                     os.remove(f"{path}/{j}")
                     print("Program törölve:", j)
-                    print("-------------------------")
 
     if not found:
         print("Nincs ilyen program")
-        print("-------------------------")
+    
+    print("-------------------------")
 
 def modify_program():
     n = -1
+    print("-------------------------")
     program = input("Program neve: ")
     with open(f'{dir}/.klaszter', 'r') as f:
         rows = f.readlines()
@@ -303,8 +235,10 @@ def modify_program():
         print("Sikeresen módosítva!")
     else:
         print("Nincs ilyen program!")
+    print("-------------------------")
 
 def stop_instance():
+    print("-------------------------")
     for i in os.listdir(dir):
         if os.path.isdir(f'{dir}/{i}') and os.path.isfile(f'{dir}/{i}/.szamitogep_config') and os.listdir(f'{dir}/{i}') != ['.szamitogep_config']:
             print(i+":")
@@ -312,6 +246,7 @@ def stop_instance():
                 if ".szamitogep_config" not in j:
                     print("\t" + j)
 
+    print("-------------------------")
     program = input("Melyik programot akarod leállítani: ")
 
     exists = False
@@ -334,6 +269,8 @@ def stop_instance():
 
     if exists == False:
         print("Nincs ilyen program!")
+    
+    print("-------------------------")
 
 def run_new_instance():
     def generate_unique_id(program_name):
@@ -405,13 +342,15 @@ def run_new_instance():
         print(f"A program új példánya futtatható és a fájl létrejött: {file_path}")
         return True
 
+    print("-------------------------")
     new_pc = input("Számítógép neve: ")
-    new_program = input("Mi a program neve?")
+    new_program = input("Mi a program neve? ")
 
     if check_resources_and_create_file(new_program, new_pc):
         print("Minden feltétel teljesült.")
     else:
         print("Nem teljesültek a feltételek.")
+    print("-------------------------")
 
 start()
 
