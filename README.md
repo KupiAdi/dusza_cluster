@@ -81,13 +81,27 @@ A program két felhasználói felülettel rendelkezik:
 ## Fejlesztői dokumentáció
 
 ### Struktúra
-    - dusza_cluster
-        - .gitignore
-        - gui.pyw - grafikus felület
-        - main.py - main cli felület
-        - translations.py - szótár
-        - requirements.txt
-        - README.md
+```
+.
+├── .klaszter                   # A klaszter konfigurációs fájlja
+├── pc1                         # Számítógép
+│   ├── .szamitogep_config      # A számítógép konfigurációs fájlja
+│   ├── chrome-Z8cqM5
+│   └── word-pbBsmb
+├── pc2                         # Számítógép
+│   ├── .szamitogep_config      # A számítógép konfigurációs fájlja
+│   └── chrome-KubQWk
+├── gui.pyw                     # Grafikus felület
+├── main.py                     # CLI felület
+├── translations.py             # Szótár
+├── README.md                   # Dokumentáció
+├── requirements.txt
+└── illustration
+    ├── image.png
+    ├── image2.png
+    ├── image3.png
+    └── image4.png
+```
 
 ### Program logikai és fizikai szerkezete
 A projekt három fő forrásfájlra tagolódik:
