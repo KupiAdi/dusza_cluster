@@ -5,11 +5,14 @@
 ## Bevezetés
 Ez a program egy klaszter alapú számítógép- és program menedzsment eszköz, amely két fő komponensből áll: egy parancssoros felületből (main.py) és egy grafikus felületből (gui.pyw). A szoftver célja, hogy segítsen a számítógépeken futó programok erőforrásainak nyomon követésében, konfigurálásában, valamint a futó alkalmazások monitorozásában és kezelésében.
 
+<div style="display: flex; width: 50%">
+    <img src="illustration/image.png" style="margin-right: 10px;">
+    <img src="illustration/image2.png">
+</div>
 
-
-<div align="center">
-  <img src="illustration/image.png">
-  <img src="illustration/image2.png">
+<div style="display: flex; width: 50%; margin-top: 10px">
+    <img src="illustration/image3.png" style="margin-right: 10px;">
+    <img src="illustration/image4.png">
 </div>
 
 ## Felhasználói dokumentáció
@@ -91,6 +94,7 @@ A program két felhasználói felülettel rendelkezik:
         - translations.py - szótár
         - requirements.txt
         - README.md
+
 ### Program logikai és fizikai szerkezete
 A projekt három fő forrásfájlra tagolódik:
 
